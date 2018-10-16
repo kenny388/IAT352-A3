@@ -115,6 +115,9 @@
       								<?php
                       //If there is error, display it below
                       if (isset($errors['dateFrom']) || isset($errors['dateTo'])){
+                        //If both fields got wrong, only display one
+                        echo @$errors['dateFrom'];
+                      } else if (isset($errors['dateFrom']) || isset($errors['dateTo'])){
                           //Suppress the error if the error doesn't exist
       										echo @$errors['dateFrom'];
                           echo @$errors['dateTo'];
@@ -122,7 +125,7 @@
       								?></span>
             <?php if (isset($errors['dateFrom']) || isset($errors['dateTo'])) echo "<br>"; ?>
           </div>
-          <div class="column">
+          <div class="column" id="rightColumn">
             <h3>Select Columns to Display</h3>
             <input type="checkbox" name="chkOrderNumber" value="chkOrderNumber" <?php if (isset($_POST['chkOrderNumber'])) echo "checked"; ?>>
             <label> Order Number</label>
@@ -268,7 +271,7 @@
 
       //Execute Query and get $result
       //
-      if (count($errors) == 0) {
+      if (isset($_POST['submit']) && count($errors) == 0) {
         $result = mysqli_query($connection, $query);
 
         //If executing query failed, print and stop the page
@@ -281,8 +284,24 @@
           echo "</div>";
           echo '<table class="table">';
 
+          //Giving the first row as table headers
+          echo '<tr class="header">';
+          //Tried to use column name as header name, automating the process, failed
+          //Just hard coding the header values in
+            // if (isset($_POST['chkOrderNumber'])) echo "<td>{$row->name}</td>";
+            // if (isset($_POST['chkOrderNumber'])) echo '<td>'.mysql_field_name($result, 0).'</td>';
+            if (isset($_POST['chkOrderNumber'])) echo "<td>orderNumber</td>";
+            if (isset($_POST['chkOrderDate'])) echo "<td>orderDate</td>";
+            if (isset($_POST['chkShippedDate'])) echo "<td>shippedDate</td>";
+            if (isset($_POST['chkProductName'])) echo "<td>productName</td>";
+            if (isset($_POST['chkProductDescription'])) echo "<td>productDescription</td>";
+            if (isset($_POST['chkQuantityOrdered'])) echo "<td>quantityOrdered</td>";
+            if (isset($_POST['chkPriceEach'])) echo "<td>priceEach</td>";
+          echo '</tr>';
+
           //Each Loop of fetching data
         while ($row = mysqli_fetch_assoc($result)) {
+
           //Make a new table row
           echo "<tr>";
           if (isset($_POST['chkOrderNumber'])) echo "<td>".$row["orderNumber"]."</td>";
@@ -302,7 +321,7 @@
 
       <!-- Printing all the errors for debugging -->
       <?php
-    	print_r($errors);
+    	// print_r($errors);
       ?>
 
     </div>
