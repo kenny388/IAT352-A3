@@ -86,6 +86,7 @@
       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 
         <div class="row">
+          <!-- Left Column -->
           <div class="column">
             <h3>Select Order Parameters</h3>
             <label>Order Number:</label>
@@ -125,6 +126,10 @@
       								?></span>
             <?php if (isset($errors['dateFrom']) || isset($errors['dateTo'])) echo "<br>"; ?>
           </div>
+
+          <!-- Right Column -->
+          <!-- Contains all checkBoxes for displaying fields -->
+          <!-- Each of these box if checked before, would remain check after submit -->
           <div class="column" id="rightColumn">
             <h3>Select Columns to Display</h3>
             <input type="checkbox" name="chkOrderNumber" value="chkOrderNumber" <?php if (isset($_POST['chkOrderNumber'])) echo "checked"; ?>>
@@ -259,20 +264,24 @@
       $dbuser = "root";
       $dbpass = "";
       $dbname = "classicmodels";
-      $connection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+      // Suppress if connection failed
+      $connection = @mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
       // Test if connection succeeded
       if(mysqli_connect_errno()) {
+        echo '<br>';
         die("Database connection failed: " .
              mysqli_connect_error() .
              " (" . mysqli_connect_errno() . ")"
         );
       }
+      //Else it wouldn't run any of the code below
 
       //Execute Query and get $result
       //
       if (isset($_POST['submit']) && count($errors) == 0) {
-        $result = mysqli_query($connection, $query);
+        //Although there wouldn't be any error theoretically, I put @ suppression here to handle exception
+        $result = @mysqli_query($connection, $query);
 
         //If executing query failed, print and stop the page
         if (!$result) {
@@ -300,10 +309,11 @@
           echo '</tr>';
 
           //Each Loop of fetching data
-        while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = @mysqli_fetch_assoc($result)) {
 
           //Make a new table row
           echo "<tr>";
+          //For each field, if checkBox checked, display the fields
           if (isset($_POST['chkOrderNumber'])) echo "<td>".$row["orderNumber"]."</td>";
           if (isset($_POST['chkOrderDate'])) echo "<td>".$row["orderDate"]."</td>";
           if (isset($_POST['chkShippedDate'])) echo "<td>".$row["shippedDate"]."</td>";
@@ -318,6 +328,15 @@
       }
       ?>
 
+      <?php
+      //If submission exist and no error
+      if(isset($_POST['submit']) && count($errors) == 0){
+        //Free $result from memory at the end
+        mysqli_free_result($result);
+        // Close database connection
+        mysqli_close($connection);
+      }
+      ?>
 
       <!-- Printing all the errors for debugging -->
       <?php
