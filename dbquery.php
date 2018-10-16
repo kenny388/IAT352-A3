@@ -80,6 +80,12 @@
             <input name="orderNumber" value="<?php if (isset($_POST['orderNumber'])) echo htmlspecialchars($_POST['orderNumber']); ?>" type="text" size="20" />
             <label>or</label>
             <br>
+            <span id='orderNumber_error' class='error'>
+      								<?php if (isset($errors['orderNumber'])){
+      										echo $errors['orderNumber'];
+      									}
+      								?></span>
+            <?php if (isset($errors['orderNumber'])) echo "<br>"; ?>
             <br>
             <label>Order Date (YYYY-MM-DD)</label>
             <br>
@@ -87,6 +93,17 @@
             <input name="dateFrom" value="<?php if (isset($_POST['dateFrom'])) echo htmlspecialchars($_POST['dateFrom']); ?>" type="text" size="20" />
             <label>to:</label>
             <input name="dateTo" value="<?php if (isset($_POST['dateTo'])) echo htmlspecialchars($_POST['dateTo']); ?>" type="text" size="20" />
+            <br>
+            <span id='date_error' class='error'>
+      								<?php
+                      //If there is error, display it below
+                      if (isset($errors['dateFrom']) || isset($errors['dateTo'])){
+                          //Suppress the error if the error doesn't exist
+      										echo @$errors['dateFrom'];
+                          echo @$errors['dateTo'];
+    									}
+      								?></span>
+            <?php if (isset($errors['dateFrom']) || isset($errors['dateTo'])) echo "<br>"; ?>
           </div>
           <div class="column">
             <h3>Select Columns to Display</h3>
@@ -125,10 +142,8 @@
 
       if (!isset($_POST['chkOrderNumber']) &&
       !isset($_POST['chkOrderDate']) &&
-      !isset($_POST['chkOrderNumber']) &&
       !isset($_POST['chkShippedDate']) &&
       !isset($_POST['chkProductName']) &&
-      !isset($_POST['chkOrderNumber']) &&
       !isset($_POST['chkProductDescription']) &&
       !isset($_POST['chkQuantityOrdered']) &&
       !isset($_POST['chkPriceEach'])) {
@@ -160,7 +175,7 @@
         $query .= "FROM orders ";
 
         //Only Join orderdetails If related checkBox are checked
-        if (isset($_POST['chkQuantityOrdered']) || isset($_POST['chkPriceEach'])) {
+        // if (isset($_POST['chkQuantityOrdered']) || isset($_POST['chkPriceEach'])) {
 
           //Start First Inner Join with orderdetails table
           $query .= "INNER JOIN orderdetails ";
@@ -168,7 +183,7 @@
           //Start defining the join conditions with ON
           $query .= "ON orders.orderNumber = orderdetails.orderNumber ";
 
-        }
+        // }
 
         //Only if the products table related fields are selected, then join the products table
         if (isset($_POST['chkProductName']) || isset($_POST['chkProductDescription'])) {
@@ -177,7 +192,7 @@
           $query .= "INNER JOIN products ";
 
           //Condition for second table
-          $query .= "ON product.productCode = orderdetails.productCode ";
+          $query .= "ON products.productCode = orderdetails.productCode ";
 
         }
 
@@ -238,37 +253,42 @@
       }
 
       //Execute Query and get $result
-      $result = mysqli_query($connection, $query);
+      //
+      if (count($errors) == 0) {
+        $result = mysqli_query($connection, $query);
 
-      //If executing query failed, print and stop the page
-      if (!$result) {
-    		die("Database query failed.");
-    	} else {
-        //Recreate Result header
-        echo '<div class="row">';
-          echo "<h2>Result</h2>";
-        echo "</div>";
-        echo '<table class="table">';
+        //If executing query failed, print and stop the page
+        if (!$result) {
+      		die("Database query failed.");
+      	} else {
+          //Recreate Result header
+          echo '<div class="row">';
+            echo "<h2>Result</h2>";
+          echo "</div>";
+          echo '<table class="table">';
 
-        //Each Loop of fetching data
+          //Each Loop of fetching data
         while ($row = mysqli_fetch_assoc($result)) {
           //Make a new table row
-               echo "<tr>";
-       echo "<td>".$row["orderNumber"]."</td>";
-       // echo "<td>".$row["firstName"]."</td>";
-       // echo "<td>".$row["lastName"]."</td>";
-       // echo "<td>".$row["email"]."</td>";
-               echo "</tr>";
-              }
-      echo "</table>";
+          echo "<tr>";
+          if (isset($_POST['chkOrderNumber'])) echo "<td>".$row["orderNumber"]."</td>";
+          if (isset($_POST['chkOrderDate'])) echo "<td>".$row["orderDate"]."</td>";
+          if (isset($_POST['chkShippedDate'])) echo "<td>".$row["shippedDate"]."</td>";
+          if (isset($_POST['chkProductName'])) echo "<td>".$row["productName"]."</td>";
+          if (isset($_POST['chkProductDescription'])) echo "<td>".$row["productDescription"]."</td>";
+          if (isset($_POST['chkQuantityOrdered'])) echo "<td>".$row["quantityOrdered"]."</td>";
+          if (isset($_POST['chkPriceEach'])) echo "<td>".$row["priceEach"]."</td>";
+          echo "</tr>";
+        }
+        echo "</table>";
+        }
       }
       ?>
 
 
-
+      <!-- Printing all the errors for debugging -->
       <?php
-      //Printing all the errors for debugging
-    	print_r($errors);
+    	// print_r($errors);
       ?>
 
     </div>

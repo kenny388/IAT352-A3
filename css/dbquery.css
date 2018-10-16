@@ -12,3 +12,8 @@
   /* display: flex;
   flex-direction: column; */
 }
+
+span {
+  font-size: 0.8em;
+  color: rgba(200, 0, 0, 1);
+}
