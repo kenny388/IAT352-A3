@@ -189,7 +189,7 @@
 
         //If order Number is filled, add this query
         if (isset($_POST['orderNumber']) && !empty($_POST['orderNumber'])) {
-          $query .= "order.orderNumber = '{$orderNumber}' ";
+          $query .= "orders.orderNumber = '{$orderNumber}' ";
         }
 
         //If order Date From is filled, add this part
@@ -199,7 +199,7 @@
             $query .= "AND ";
           }
           //Add the order Date >= clause with dateForm value
-          $query .= "order.orderDate >= '{$dateFrom}' ";
+          $query .= "orders.orderDate >= '{$dateFrom}' ";
         }
 
         //If order Date To is filled, add this part
@@ -209,7 +209,7 @@
             $query .= "AND ";
           }
           //Add the order Date <= clause with dateTo value
-          $query .= "order.orderDate <= '{$dateTo}' ";
+          $query .= "orders.orderDate <= '{$dateTo}' ";
         }
 
         //Finally, echo the query out
@@ -220,10 +220,51 @@
       ?>
 
 
-      <!-- Start of tables -->
-      <div class="row">
-        <h2>Result</h2>
-      </div>
+      <!-- Start of Connecting and executing queries to database -->
+      <?php
+      // create new connection
+      $dbhost = "localhost";
+      $dbuser = "root";
+      $dbpass = "";
+      $dbname = "classicmodels";
+      $connection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+
+      // Test if connection succeeded
+      if(mysqli_connect_errno()) {
+        die("Database connection failed: " .
+             mysqli_connect_error() .
+             " (" . mysqli_connect_errno() . ")"
+        );
+      }
+
+      //Execute Query and get $result
+      $result = mysqli_query($connection, $query);
+
+      //If executing query failed, print and stop the page
+      if (!$result) {
+    		die("Database query failed.");
+    	} else {
+        //Recreate Result header
+        echo '<div class="row">';
+          echo "<h2>Result</h2>";
+        echo "</div>";
+        echo '<table class="table">';
+
+        //Each Loop of fetching data
+        while ($row = mysqli_fetch_assoc($result)) {
+          //Make a new table row
+               echo "<tr>";
+       echo "<td>".$row["orderNumber"]."</td>";
+       // echo "<td>".$row["firstName"]."</td>";
+       // echo "<td>".$row["lastName"]."</td>";
+       // echo "<td>".$row["email"]."</td>";
+               echo "</tr>";
+              }
+      echo "</table>";
+      }
+      ?>
+
+
 
       <?php
       //Printing all the errors for debugging
