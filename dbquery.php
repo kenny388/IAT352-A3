@@ -59,6 +59,18 @@
           }
         }
       }
+
+      //Check if no checkBoxes are checked
+      if (!isset($_POST['chkOrderNumber']) &&
+      !isset($_POST['chkOrderDate']) &&
+      !isset($_POST['chkShippedDate']) &&
+      !isset($_POST['chkProductName']) &&
+      !isset($_POST['chkProductDescription']) &&
+      !isset($_POST['chkQuantityOrdered']) &&
+      !isset($_POST['chkPriceEach'])) {
+        //There is nothing to select :/
+        $errors['fields'] = "Please select some fields to display!";
+      }
     }
     ?>
 
@@ -77,9 +89,11 @@
           <div class="column">
             <h3>Select Order Parameters</h3>
             <label>Order Number:</label>
+            <!-- If field exist, it would be restored back to the input -->
             <input name="orderNumber" value="<?php if (isset($_POST['orderNumber'])) echo htmlspecialchars($_POST['orderNumber']); ?>" type="text" size="20" />
             <label>or</label>
             <br>
+            <!-- span for error message -->
             <span id='orderNumber_error' class='error'>
       								<?php if (isset($errors['orderNumber'])){
       										echo $errors['orderNumber'];
@@ -90,10 +104,13 @@
             <label>Order Date (YYYY-MM-DD)</label>
             <br>
             <label>from:</label>
+            <!-- If field exist, it would be restored back to the input -->
             <input name="dateFrom" value="<?php if (isset($_POST['dateFrom'])) echo htmlspecialchars($_POST['dateFrom']); ?>" type="text" size="20" />
             <label>to:</label>
+            <!-- If field exist, it would be restored back to the input -->
             <input name="dateTo" value="<?php if (isset($_POST['dateTo'])) echo htmlspecialchars($_POST['dateTo']); ?>" type="text" size="20" />
             <br>
+            <!-- span for error message -->
             <span id='date_error' class='error'>
       								<?php
                       //If there is error, display it below
@@ -128,6 +145,14 @@
             <input type="checkbox" name="chkPriceEach" value="chkPriceEach" <?php if (isset($_POST['chkPriceEach'])) echo "checked"; ?>>
             <label> Price Each</label>
             <br>
+            <!-- span for error message -->
+            <span id='chkBox_error' class='error'>
+      								<?php
+                      //If there is error, display it below
+                      if (isset($errors['fields'])) {
+      										echo $errors['fields'];
+    									}
+      								?></span>
           </div>
         </div>
 
@@ -139,17 +164,6 @@
 
       <!-- Start of Query Statement Construction -->
       <?php
-
-      if (!isset($_POST['chkOrderNumber']) &&
-      !isset($_POST['chkOrderDate']) &&
-      !isset($_POST['chkShippedDate']) &&
-      !isset($_POST['chkProductName']) &&
-      !isset($_POST['chkProductDescription']) &&
-      !isset($_POST['chkQuantityOrdered']) &&
-      !isset($_POST['chkPriceEach'])) {
-        //There is nothing to select :/
-        $errors['fields'] = "Please select some fields to display!";
-      }
 
       //If submission exist and no error
       if(isset($_POST['submit']) && count($errors) == 0){
@@ -288,7 +302,7 @@
 
       <!-- Printing all the errors for debugging -->
       <?php
-    	// print_r($errors);
+    	print_r($errors);
       ?>
 
     </div>

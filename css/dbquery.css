@@ -13,6 +13,10 @@
   flex-direction: column; */
 }
 
+table, th, td {
+  border: 1px solid black;
+}
+
 span {
   font-size: 0.8em;
   color: rgba(200, 0, 0, 1);
