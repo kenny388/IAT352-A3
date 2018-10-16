@@ -115,7 +115,7 @@
             <span id='date_error' class='error'>
       								<?php
                       //If there is error, display it below
-                      if (isset($errors['dateFrom']) || isset($errors['dateTo'])){
+                      if (isset($errors['dateFrom']) && isset($errors['dateTo'])){
                         //If both fields got wrong, only display one
                         echo @$errors['dateFrom'];
                       } else if (isset($errors['dateFrom']) || isset($errors['dateTo'])){
